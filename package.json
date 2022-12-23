@@ -1,0 +1,12 @@
+{
+  "name": "@jupiterone/integration-github-actions",
+  "version": "1.0.0",
+  "description": "Shared GitHub actions from the integration repositories",
+  "main": "index.js",
+  "repository": "git@github.com:JupiterOne/integration-github-actions.git",
+  "author": "David Obregon <nano2766@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.0"
+  }
+}
