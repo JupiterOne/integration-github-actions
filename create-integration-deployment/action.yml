@@ -1,0 +1,71 @@
+name: Create integration deployment PR
+description: "GitHub action that creates a PR in integration-deployments with changes to the package.json bumping the version and the associated changes to the yarn.lock"
+author: JupiterOne
+inputs:
+  integrationName:
+    description: "Integration name as it appears in the integration-deployments repo"
+    required: true
+  version:
+    description: "New version of the graph npm package"
+  githubToken:
+    description: 'GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT)'
+    default: ${{ github.token }}
+  npmAuthToken:
+    description: 'NPM_AUTH_TOKEN to install JupiterOne dependencies'
+    required: true
+  mainBranch:
+    description: 'base branch to pull changes from integration-deployments'
+    default: main
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - name: Clone integration-deployments repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ inputs.githubToken }}
+        repository: JupiterOne/integration-deployments
+        ref: ${{ inputs.mainBranch }}
+        path: './integration-deployments'
+    - name: Set git config
+      shell: bash
+      working-directory: ./integration-deployments
+      run: |
+          git config --local user.email "internal-automation.bot@jupiterone.com"
+          git config --local user.name "j1-internal-automation"
+    - name: Clean up and create branch 
+      shell: bash
+      working-directory: ./integration-deployments
+      run: |
+          git reset --hard
+          git checkout -b deploy-${{ inputs.integrationName }}-${{ inputs.version }}
+          git push origin deploy-${{ inputs.integrationName }}-${{ inputs.version }}
+    - name: Bump version in package.json and commit changes
+      shell: bash
+      working-directory: ./integration-deployments
+      run: |
+          echo "//registry.npmjs.org/:_authToken=${{ inputs.npmAuthToken }}" > .npmrc
+          cd ./src/${{ inputs.integrationName }}
+          yarn
+          yarn upgrade @jupiterone/graph-${{ inputs.integrationName }}@^${{ inputs.version }}
+          git add .
+          git commit -m "bump ${{ inputs.integrationName }} to version ${{ inputs.version }} deploy2dev"
+    - name: Create Pull Request
+      id: create_pull_request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ inputs.githubToken }}
+        path: ./integration-deployments
+        branch: deploy-${{ inputs.integrationName }}-${{ inputs.version }}
+        base: ${{ inputs.mainBranch }}
+        title: "[Github Action] - Deploy graph-${{ inputs.integrationName }} v${{ inputs.version }}"
+        body: |
+          ## Summary
+          Pull request created by [Github action](https://github.com/JupiterOne/integration-github-actions).
+          PR to bump the version ${{ inputs.version }} for the integration graph-${{ inputs.integrationName }}
+    # TODO: implement me
+    # - name: Notify via slack
