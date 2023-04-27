@@ -76,5 +76,10 @@ runs:
           ${{ inputs.releaseNotes }}
           Pull request created by [Github action](https://github.com/JupiterOne/integration-github-actions).
           PR to bump the version ${{ inputs.version }} for the integration ${{ inputs.integrationName }}
+    - name: Enable Automerge
+      if: steps.create_pull_request.outputs.pull-request-operation == 'created'
+      run: gh pr merge --squash --auto "${{ steps.create_pull_request.outputs.pull-request-url }}"
+      env:
+        GH_TOKEN: ${{ inputs.githubToken }}
     # TODO: implement me
     # - name: Notify via slack
