@@ -50,8 +50,8 @@ runs:
       working-directory: ./integration-deployments
       run: |
           git reset --hard
-          git checkout -b deploy-${{ inputs.graphProjectName || inputs.integrationName }}-${{ inputs.version }}
-          git push origin deploy-${{ inputs.graphProjectName || inputs.integrationName }}-${{ inputs.version }}
+          git checkout -b deploy-${{ inputs.integrationName }}-${{ inputs.version }}
+          git push origin deploy-${{ inputs.integrationName }}-${{ inputs.version }}
     - name: Bump version in package.json and commit changes
       shell: bash
       working-directory: ./integration-deployments
@@ -61,14 +61,14 @@ runs:
           yarn
           yarn upgrade @jupiterone/graph-${{ inputs.graphProjectName || inputs.integrationName }}@^${{ inputs.version }}
           git add .
-          git commit -m "bump ${{ inputs.graphProjectName || inputs.integrationName }} to version ${{ inputs.version }} deploy2dev"
+          git commit -m "bump ${{ inputs.integrationName }} to version ${{ inputs.version }} deploy2dev"
     - name: Create Pull Request
       id: create_pull_request
       uses: peter-evans/create-pull-request@v4
       with:
         token: ${{ inputs.githubToken }}
         path: ./integration-deployments
-        branch: deploy-${{ inputs.graphProjectName || inputs.integrationName }}-${{ inputs.version }}
+        branch: deploy-${{ inputs.integrationName }}-${{ inputs.version }}
         base: ${{ inputs.mainBranch }}
         title: "[Github Action] - Deploy graph-${{ inputs.graphProjectName || inputs.integrationName }} v${{ inputs.version }}"
         body: |
