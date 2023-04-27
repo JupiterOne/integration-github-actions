@@ -38,3 +38,51 @@ This GitHub Action can be added to graph-* repos to automatically create pull re
       githubToken: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
       npmAuthToken: ${{ secrets.NPM_AUTH_TOKEN }}
 ```
+
+#### Troubleshooting `create-integration-deplyment`
+
+The `JupiterOne/integration-github-actions/create-integration-deployment` action is often used in conjunction with the `jupiterone/action-npm-build-releas` action. These actions require a number of configurations to ensure they can succeed. These include:
+
+1. Access to the `NPM_AUTH_TOKEN` org secret
+2. Access to the `AUTO_GITHUB_PAT_TOKEN` org secret
+3. Permission for the `j1-internal-automation` github user to override branch protection rules
+4. Configured without any required status checks
+
+If your workflows are failing, start by running the following queries in j1.apps.us.jupiterone.io to find out if your repository is misconfigured.
+
+##### Repos that don’t have the NPM_AUTH_TOKEN secret
+```
+FIND 
+  github_repo WITH name ^= 'graph-' AND archived != true as r
+  THAT !USES github_org_secret WITH name = 'NPM_AUTH_TOKEN'
+RETURN r.name
+ORDER BY r.name ASC
+```
+
+##### Repos that don’t have the AUTO_GITHUB_PAT_TOKEN secret
+```
+FIND 
+  github_repo WITH name ^= 'graph-' AND archived != true as r
+  THAT !USES github_org_secret WITH name = 'AUTO_GITHUB_PAT_TOKEN'
+RETURN r.name
+ORDER BY r.name ASC
+```
+
+##### Repos that don’t allow j1-internal-automation to bypass branch protection
+```
+FIND 
+  github_repo WITH name ^= 'graph-' AND archived != true as r
+  THAT !HAS >> github_branch_protection_rule 
+  THAT OVERRIDES << github_user WITH name = 'j1-internal-automation' 
+RETURN r.name
+ORDER BY r.name ASC
+```
+
+##### Repos that have required status checks
+```
+FIND 
+  github_repo WITH name ^= 'graph-' AND archived != true as r
+  THAT HAS github_branch_protection_rule WITH requiredStatusChecks != undefined
+RETURN r.name
+ORDER BY r.name ASC
+```
