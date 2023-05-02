@@ -58,7 +58,7 @@ This GitHub Action can be added to graph-* repos to automatically create pull re
       npmAuthToken: ${{ secrets.NPM_AUTH_TOKEN }}
   - name: Print URL
     shell: bash
-    run: echo "${{ steps.create-version-pr.outputs.pull-request-url }}
+    run: echo "${{ steps.create-version-pr.outputs.pull-request-url }}"
 ```
 
 
