@@ -27,17 +27,41 @@ Just a github action that you can use to test in your repo. This action just say
 ### Bump integration deployment version
 This GitHub Action can be added to graph-* repos to automatically create pull requests in the integration-deployments repository with the new version of the graph.
 
+##### Inputs
+
+| Id               | Description                                                                          | Required |
+| ---------------- | ------------------------------------------------------------------------------------ | -------- |
+| integrationName  | Integration name as it appears in the integration-deployments repo                   | Yes      |
+| graphProjectName | The name of the graph project. Default: `graph-${ integrationName }`.                | No       |
+| version          | New version of the graph npm package                                                 | No       |
+| releaseNotes     | Release notes to include in pull request                                             | No       |
+| githubToken      | GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT). Default: `github.token` | No       |
+| npmAuthToken     | NPM_AUTH_TOKEN to install JupiterOne dependencies                                    | Yes      |
+| mainBranch       | Base branch to pull changes from integration-deployments. Default: `main`            | No       |
+
+##### Outputs
+
+| Id               | Description                     |
+| ---------------- | ------------------------------- |
+| pull-request-url | URL of the created pull request |
+
 ##### Example Usage:
 ```yaml
   - name: Bump integration deployment version
     uses: JupiterOne/integration-github-actions/create-integration-deployment@v1.0.0
+    id: create-version-pr
     with:
       integrationName:
         ${{ steps.get-integration-name.outputs.integrationName }}
       version: ${{ steps.get-version-number.outputs.versionNumber }}
       githubToken: ${{ secrets.AUTO_GITHUB_PAT_TOKEN }}
       npmAuthToken: ${{ secrets.NPM_AUTH_TOKEN }}
+  - name: Print URL
+    shell: bash
+    run: echo "${{ steps.create-version-pr.outputs.pull-request-url }}"
 ```
+
+
 
 #### Troubleshooting `create-integration-deplyment`
 
