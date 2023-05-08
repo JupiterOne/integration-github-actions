@@ -70,7 +70,7 @@ runs:
         path: ./integration-deployments
         branch: deploy-${{ inputs.integrationName }}-${{ inputs.version }}
         base: ${{ inputs.mainBranch }}
-        title: "[Github Action] - Deploy graph-${{ inputs.graphProjectName || inputs.integrationName }} v${{ inputs.version }}"
+        title: "[Github Action][${{ inputs.integrationName }}] - Deploy graph-${{ inputs.graphProjectName || inputs.integrationName }} v${{ inputs.version }}"
         body: |
           ## Summary
           ${{ inputs.releaseNotes }}
