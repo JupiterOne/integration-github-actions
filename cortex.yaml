@@ -1,0 +1,12 @@
+openapi: "3.0.0"
+info:
+  title: "@jupiterone/integration Github Actions"
+  description: "Shared GitHub actions from the integration repositories"
+  x-cortex-git:
+    github:
+      repository: "JupiterOne/integration-github-actions"
+  x-cortex-owners:
+    - type: "group"
+      name: "JupiterOne/integrations"
+  x-cortex-service-groups: "tier-4"
+  x-cortex-tag: "@jupiterone/integration-github-actions"
