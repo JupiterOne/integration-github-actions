@@ -20,6 +20,9 @@ inputs:
   mainBranch:
     description: 'base branch to pull changes from integration-deployments'
     default: main
+  deploy2dev:
+    description: 'Deploy PR branch to dev (default "true", set to "false" to disable)'
+    default: 'true'
 outputs:
   pull-request-url:
     description: "The URL of the pull request."
@@ -61,7 +64,7 @@ runs:
           yarn
           yarn upgrade @jupiterone/graph-${{ inputs.graphProjectName || inputs.integrationName }}@${{ inputs.version }}
           git add .
-          git commit -m "bump ${{ inputs.integrationName }} to version ${{ inputs.version }} deploy2dev"
+          git commit -m "bump ${{ inputs.integrationName }} to version ${{ inputs.version }} ${{ inputs.deploy2dev == 'true' && 'deploy2dev' || '' }}"
     - name: Create Pull Request
       id: create_pull_request
       uses: peter-evans/create-pull-request@v4
