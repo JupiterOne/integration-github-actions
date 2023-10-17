@@ -2,11 +2,14 @@
   "name": "@jupiterone/integration-github-actions",
   "version": "1.0.0",
   "description": "Shared GitHub actions from the integration repositories",
-  "main": "index.js",
-  "repository": "git@github.com:JupiterOne/integration-github-actions.git",
-  "author": "Jupiter One",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JupiterOne/integration-github-actions"
+  },
   "license": "UNLICENSED",
-   "scripts": {
+  "main": "index.js",
+  "author": "Jupiter One",
+  "scripts": {
     "build": "tsc --build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
